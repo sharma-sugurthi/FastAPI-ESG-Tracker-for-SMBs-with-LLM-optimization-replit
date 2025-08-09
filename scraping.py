@@ -6,6 +6,10 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, HttpUrl, Field, validator
 from datetime import datetime
 from enum import Enum
+from fastapi import APIRouter, HTTPException, Depends
+
+# Create the router
+router = APIRouter()
 
 
 class ScrapingStatus(str, Enum):
@@ -203,4 +207,70 @@ DEFAULT_NEWS_FEEDS = [
         "category": AlertCategory.COMPLIANCE
     }
 ]
+
+
+# Scraping API Endpoints
+@router.post("/scrape")
+async def scrape_url_endpoint(request: ScrapingRequest):
+    """Scrape a URL for ESG content with GDPR compliance."""
+    try:
+        # Import scraping service
+        from scraping_service import scraping_service
+        
+        # For demo purposes, use a dummy user_id
+        result = await scraping_service.scrape_url(request, "demo_user")
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/alerts")
+async def get_regulatory_alerts(
+    keywords: Optional[str] = None,
+    max_results: int = 10,
+    days_back: int = 7,
+    min_relevance_score: float = 0.5
+):
+    """Get regulatory alerts from news sources."""
+    try:
+        # Import news service
+        from scraping_service import news_service
+        
+        # Create alerts request
+        alerts_request = AlertsRequest(
+            keywords=keywords.split(",") if keywords else None,
+            max_results=max_results,
+            days_back=days_back,
+            min_relevance_score=min_relevance_score
+        )
+        
+        alerts = await news_service.get_regulatory_alerts(alerts_request)
+        return alerts
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/gdpr/privacy-notice")
+async def get_privacy_notice():
+    """Get GDPR privacy notice for web scraping."""
+    return {
+        "privacy_notice": {
+            "purpose": "ESG content analysis for compliance tracking",
+            "data_collected": "Public web content, ESG-related text snippets",
+            "retention_period": "30 days",
+            "user_rights": [
+                "Right to access your data",
+                "Right to rectification",
+                "Right to erasure",
+                "Right to restrict processing",
+                "Right to data portability",
+                "Right to object"
+            ],
+            "legal_basis": "Legitimate interest for business compliance analysis"
+        },
+        "consent_form": {
+            "required_fields": ["user_consent", "url"],
+            "consent_text": "I consent to the collection and processing of publicly available web content for ESG analysis purposes."
+        }
+    }
 
