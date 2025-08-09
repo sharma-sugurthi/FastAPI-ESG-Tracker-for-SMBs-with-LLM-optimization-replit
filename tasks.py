@@ -6,6 +6,11 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field, validator
 from datetime import datetime
 from enum import Enum
+from fastapi import APIRouter, HTTPException, Depends
+import uuid
+
+# Create the router
+router = APIRouter()
 
 
 class TaskDifficulty(str, Enum):
@@ -279,4 +284,115 @@ DEFAULT_TASK_TEMPLATES = {
         }
     ]
 }
+
+
+# Task API Endpoints
+@router.post("/generate", response_model=TaskGenerationResponse)
+async def generate_tasks(request: TaskGenerationRequest):
+    """Generate personalized ESG improvement tasks based on user data."""
+    try:
+        # Import task generation service
+        from scoring_service import scoring_service
+        
+        # Generate tasks based on user data
+        tasks = []
+        current_time = datetime.utcnow()
+        
+        # Use default templates for now
+        templates = DEFAULT_TASK_TEMPLATES.get(request.industry, DEFAULT_TASK_TEMPLATES["retail"])
+        
+        # Filter by difficulty preference if specified
+        if request.difficulty_preference:
+            templates = [t for t in templates if t["difficulty"] == request.difficulty_preference]
+        
+        # Filter by focus areas if specified
+        if request.focus_areas:
+            templates = [t for t in templates if t["category"] in request.focus_areas]
+        
+        # Limit to max_tasks
+        templates = templates[:request.max_tasks]
+        
+        total_points = 0
+        for i, template in enumerate(templates):
+            task_id = f"task-{uuid.uuid4().hex[:8]}"
+            
+            esg_task = ESGTask(
+                id=task_id,
+                task=template["task"],
+                description=f"Industry-specific task for {request.industry} businesses",
+                points=template["points"],
+                category=template["category"],
+                difficulty=template["difficulty"],
+                estimated_impact=template["estimated_impact"],
+                estimated_cost=template.get("estimated_cost"),
+                timeline=template.get("timeline"),
+                resources_needed=["Planning", "Implementation team"],
+                success_metrics=["Performance improvement", "Cost savings"],
+                industry_specific=True,
+                created_at=current_time
+            )
+            
+            tasks.append(esg_task)
+            total_points += template["points"]
+        
+        # Generate recommendations
+        recommendations = [
+            "Start with easy tasks to build momentum",
+            "Focus on high-impact, low-cost initiatives first",
+            f"Target {request.industry}-specific best practices"
+        ]
+        
+        # Priority order (easy tasks first)
+        priority_order = [t.id for t in sorted(tasks, key=lambda x: x.difficulty.value)]
+        
+        return TaskGenerationResponse(
+            tasks=tasks,
+            total_points_available=total_points,
+            recommendations=recommendations,
+            priority_order=priority_order,
+            generated_at=current_time
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/badges", response_model=List[ESGBadge])
+async def get_available_badges():
+    """Get all available ESG badges."""
+    return DEFAULT_BADGES
+
+
+@router.get("/progress/{user_id}", response_model=UserProgress)
+async def get_user_progress(user_id: str):
+    """Get user's ESG progress and achievements."""
+    try:
+        # For demo purposes, return mock progress
+        return UserProgress(
+            user_id=user_id,
+            total_points=150,
+            level=2,
+            badges_earned=[DEFAULT_BADGES[0], DEFAULT_BADGES[2]],
+            completed_tasks=3,
+            pending_tasks=2,
+            current_streak=5,
+            last_activity=datetime.utcnow()
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/progress/{user_id}/update")
+async def update_task_progress(user_id: str, progress: TaskProgress):
+    """Update progress on a specific task."""
+    try:
+        # For demo purposes, just return success
+        return {
+            "message": "Task progress updated successfully",
+            "task_id": progress.task_id,
+            "status": progress.status,
+            "points_earned": progress.points_earned
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
