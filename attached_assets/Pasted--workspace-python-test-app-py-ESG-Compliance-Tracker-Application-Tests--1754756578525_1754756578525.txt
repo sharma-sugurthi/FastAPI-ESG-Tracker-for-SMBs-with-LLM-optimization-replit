@@ -1,0 +1,102 @@
+~/workspace$ python test_app.py
+🧪 ESG Compliance Tracker - Application Tests
+==================================================
+
+📋 Imports
+------------------------------
+Testing imports...
+✓ Main application imported successfully
+✓ Configuration loaded successfully
+✓ LLM service imported successfully
+✓ CSV service imported successfully
+✓ Scraping service imported successfully
+✓ Scoring service imported successfully
+✓ ESG models loaded (10 questions)
+✅ Imports PASSED
+
+📋 Configuration
+------------------------------
+
+Testing configuration...
+✓ App name: ESG Compliance Tracker
+✓ Model provider: groq
+✓ Host: 0.0.0.0
+✓ Port: 5000
+✓ Upload directory: ./uploads
+✓ Upload directory created/verified: ./uploads
+✅ Configuration PASSED
+
+📋 ESG Questions
+------------------------------
+
+Testing ESG questions...
+✓ Loaded 10 ESG questions
+  Question 1: energy_consumption (environmental)
+  Question 2: co2_emissions (environmental)
+  Question 3: packaging_recyclability (environmental)
+✓ Created test answer: energy_consumption = 45000
+✅ ESG Questions PASSED
+
+📋 LLM Service
+------------------------------
+
+Testing LLM service...
+✓ LLM provider available: groq
+✓ Default tasks available: 3 tasks
+✅ LLM Service PASSED
+
+📋 CSV Service
+------------------------------
+
+Testing CSV service...
+✓ CSV template generated: esg_data_template.csv
+  Headers: 18 columns
+  Sample data: 1 rows
+✓ Supported formats: ['.csv', '.xlsx', '.xls']
+✅ CSV Service PASSED
+
+📋 Scoring Service
+------------------------------
+
+Testing scoring service...
+✓ Enhanced score calculated: 20.2
+  Badge: ESG Beginner
+  Level: 3
+  Improvement areas: 5
+✅ Scoring Service PASSED
+
+📋 API Routes
+------------------------------
+
+Testing API routes...
+✓ API routes loaded: 37 routes
+  ✓ GET /
+  ✓ GET /health
+  ✓ POST /auth/register
+  ✓ POST /auth/login
+  ✓ GET /esg/questions
+  ✓ POST /esg/questionnaire
+  ✓ POST /upload/csv-upload
+  ✓ POST /scraping/scrape
+  ✓ POST /tasks/generate
+✅ API Routes PASSED
+
+📋 Sample Data
+------------------------------
+
+Creating sample data...
+✓ Sample CSV created: sample_esg_data.csv
+✓ .env file already exists
+✅ Sample Data PASSED
+
+==================================================
+🏁 Test Results: 8/8 tests passed
+🎉 All tests passed! The application is ready to run.
+
+🚀 To start the application:
+   uvicorn main:app --reload --host 0.0.0.0 --port 5000
+
+📚 Then visit:
+   - API Documentation: http://localhost:5000/docs
+   - Health Check: http://localhost:5000/health
+~/workspace$ 
