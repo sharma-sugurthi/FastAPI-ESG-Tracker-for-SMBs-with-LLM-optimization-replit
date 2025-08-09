@@ -20,6 +20,28 @@ mode = "sequential"
 task = "shell.exec"
 args = "uvicorn main:app --host 0.0.0.0 --port 5000"
 
+[[workflows.workflow]]
+name = "Frontend Dev"
+author = 46196685
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && npm install && npm start"
+
+[[workflows.workflow]]
+name = "Full Stack"
+author = 46196685
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "uvicorn main:app --host 0.0.0.0 --port 5000"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && npm start"
+
 [[ports]]
 localPort = 5000
 externalPort = 80
