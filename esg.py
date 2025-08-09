@@ -6,6 +6,34 @@ from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field, validator
 from datetime import datetime
 from enum import Enum
+from fastapi import FastAPI, HTTPException
+
+# Assuming 'router' is defined elsewhere or you intend to create it.
+# For this example, let's assume a basic FastAPI app setup.
+# If you have a specific router object from another library, adjust accordingly.
+# If 'router' is meant to be a Starlette router or similar, ensure it's imported and initialized.
+
+# Placeholder for router if it's not defined in this file.
+# In a real FastAPI app, you'd likely have a main app instance and attach routers to it.
+# For demonstration, we'll assume 'router' is a FastAPI router instance.
+try:
+    from fastapi import APIRouter
+    router = APIRouter()
+except ImportError:
+    # Fallback or error if APIRouter is not available
+    # This might indicate FastAPI is not installed or the environment is misconfigured.
+    print("Warning: fastapi.APIRouter not found. API endpoints might not work.")
+    # Define a dummy router to prevent immediate errors if fastapi is not the primary framework
+    class DummyRouter:
+        def get(self, path, **kwargs):
+            def decorator(func):
+                return func
+            return decorator
+        def post(self, path, **kwargs):
+            def decorator(func):
+                return func
+            return decorator
+    router = DummyRouter()
 
 
 class ESGCategory(str, Enum):
@@ -55,7 +83,7 @@ class ESGQuestionnaire(BaseModel):
     answers: List[ESGAnswer]
     completed_at: Optional[datetime] = None
     score: Optional[float] = None
-    
+
     class Config:
         json_encoders = {
             datetime: lambda v: v.isoformat()
@@ -72,7 +100,7 @@ class ESGScore(BaseModel):
     improvement_areas: List[str]
     strengths: List[str]
     calculated_at: datetime
-    
+
     class Config:
         json_encoders = {
             datetime: lambda v: v.isoformat()
@@ -89,7 +117,7 @@ class ESGMetrics(BaseModel):
     recycling_rate: Optional[float] = Field(default=None, ge=0.0, le=100.0, description="percentage")
     renewable_energy_percentage: Optional[float] = Field(default=None, ge=0.0, le=100.0, description="percentage")
     packaging_recyclability: Optional[float] = Field(default=None, ge=0.0, le=100.0, description="percentage")
-    
+
     # Social metrics
     employee_count: Optional[int] = Field(default=None, ge=0)
     diversity_percentage: Optional[float] = Field(default=None, ge=0.0, le=100.0, description="DEI percentage")
@@ -97,7 +125,7 @@ class ESGMetrics(BaseModel):
     training_hours_per_employee: Optional[float] = Field(default=None, ge=0.0, description="hours per year")
     employee_satisfaction_score: Optional[float] = Field(default=None, ge=0.0, le=10.0, description="1-10 scale")
     community_investment: Optional[float] = Field(default=None, ge=0.0, description="USD per year")
-    
+
     # Governance metrics
     board_independence: Optional[float] = Field(default=None, ge=0.0, le=100.0, description="percentage")
     ethics_training_completion: Optional[float] = Field(default=None, ge=0.0, le=100.0, description="percentage")
@@ -207,3 +235,40 @@ DEFAULT_ESG_QUESTIONS = [
     )
 ]
 
+
+# ESG API Endpoints
+@router.get("/questions")
+async def get_esg_questions():
+    """Get all ESG questions."""
+    return {"questions": DEFAULT_ESG_QUESTIONS}
+
+
+@router.post("/questionnaire")
+async def submit_questionnaire(questionnaire: ESGQuestionnaire):
+    """Submit ESG questionnaire."""
+    # Basic validation
+    if not questionnaire.answers:
+        raise HTTPException(status_code=400, detail="No answers provided")
+
+    return {
+        "message": "Questionnaire submitted successfully",
+        "user_id": questionnaire.user_id,
+        "answers_count": len(questionnaire.answers)
+    }
+
+
+@router.get("/score/{user_id}")
+async def get_user_score(user_id: str):
+    """Get user's ESG score."""
+    # This would typically fetch from database
+    return {
+        "user_id": user_id,
+        "score": {
+            "overall_score": 75.0,
+            "environmental_score": 70.0,
+            "social_score": 80.0,
+            "governance_score": 75.0,
+            "badge": "Sustainability Star",
+            "calculated_at": datetime.now().isoformat()
+        }
+    }
