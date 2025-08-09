@@ -1,0 +1,93 @@
+~/workspace$ python test_app.py
+🧪 ESG Compliance Tracker - Application Tests
+==================================================
+
+📋 Imports
+------------------------------
+Testing imports...
+/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pydantic/_internal/_fields.py:149: UserWarning: Field "model_provider" has conflict with protected namespace "model_".
+
+You may be able to resolve this warning by setting `model_config['protected_namespaces'] = ('settings_',)`.
+  warnings.warn(
+✓ Main application imported successfully
+✓ Configuration loaded successfully
+✓ LLM service imported successfully
+✓ CSV service imported successfully
+✓ Scraping service imported successfully
+✓ Scoring service imported successfully
+⚠ ESG models not found, but application can still work
+✅ Imports PASSED
+
+📋 Configuration
+------------------------------
+
+Testing configuration...
+✓ App name: ESG Compliance Tracker
+✓ Model provider: groq
+✓ Host: 0.0.0.0
+✓ Port: 5000
+✓ Upload directory: ./uploads
+✓ Upload directory created/verified: ./uploads
+✅ Configuration PASSED
+
+📋 ESG Questions
+------------------------------
+
+Testing ESG questions...
+✗ ESG questions test failed: cannot import name 'DEFAULT_ESG_QUESTIONS' from 'csv_data' (/home/runner/workspace/csv_data.py)
+❌ ESG Questions FAILED
+
+📋 LLM Service
+------------------------------
+
+Testing LLM service...
+✓ LLM provider available: groq
+✓ Default tasks available: 3 tasks
+✅ LLM Service PASSED
+
+📋 CSV Service
+------------------------------
+
+Testing CSV service...
+✓ CSV template generated: esg_data_template.csv
+  Headers: 18 columns
+  Sample data: 1 rows
+✓ Supported formats: ['.csv', '.xlsx', '.xls']
+✅ CSV Service PASSED
+
+📋 Scoring Service
+------------------------------
+
+Testing scoring service...
+✗ Scoring service test failed: cannot import name 'ESGAnswer' from 'csv_data' (/home/runner/workspace/csv_data.py)
+❌ Scoring Service FAILED
+
+📋 API Routes
+------------------------------
+
+Testing API routes...
+✓ API routes loaded: 37 routes
+  ✓ GET /
+  ✓ GET /health
+  ✓ POST /auth/register
+  ✓ POST /auth/login
+  ✓ GET /esg/questions
+  ✓ POST /esg/questionnaire
+  ✓ POST /upload/csv-upload
+  ✓ POST /scraping/scrape
+  ✓ POST /tasks/generate
+✅ API Routes PASSED
+
+📋 Sample Data
+------------------------------
+
+Creating sample data...
+✓ Sample CSV created: sample_esg_data.csv
+✓ .env file already exists
+✅ Sample Data PASSED
+
+==================================================
+🏁 Test Results: 6/8 tests passed
+⚠️  Some tests failed. Please check the errors above.
+   The application may still work, but some features might be limited.
+~/workspace$ 
