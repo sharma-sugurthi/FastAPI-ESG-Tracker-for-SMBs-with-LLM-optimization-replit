@@ -91,6 +91,8 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        # Fix pydantic warning about model_provider field
+        protected_namespaces = ('settings_',)
 
 
 # Create global settings instance

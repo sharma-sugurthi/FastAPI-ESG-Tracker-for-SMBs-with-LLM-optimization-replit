@@ -198,6 +198,142 @@ DEFAULT_CSV_MAPPINGS = [
 ]
 
 
+class ESGAnswer(BaseModel):
+    """ESG answer model for questionnaire responses."""
+    question_id: str
+    value: Optional[Any] = None
+    is_llm_suggested: bool = False
+    source: str = "user_input"
+    confidence: Optional[float] = None
+    
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
+
+
+class ESGCategory(str, Enum):
+    """ESG category enumeration."""
+    ENVIRONMENTAL = "environmental"
+    SOCIAL = "social"
+    GOVERNANCE = "governance"
+
+
+class ESGQuestionType(str, Enum):
+    """ESG question type enumeration."""
+    NUMERIC = "numeric"
+    PERCENTAGE = "percentage"
+    BOOLEAN = "boolean"
+    TEXT = "text"
+
+
+class ESGQuestion(BaseModel):
+    """ESG question model."""
+    id: str
+    question: str
+    category: ESGCategory
+    question_type: ESGQuestionType
+    weight: float = 1.0
+    industry_default: Optional[float] = None
+    description: Optional[str] = None
+    unit: Optional[str] = None
+
+
+# Default ESG questions for retail SMBs
+DEFAULT_ESG_QUESTIONS = [
+    ESGQuestion(
+        id="energy_consumption",
+        question="What is your annual energy consumption (kWh)?",
+        category=ESGCategory.ENVIRONMENTAL,
+        question_type=ESGQuestionType.NUMERIC,
+        weight=1.0,
+        industry_default=45000,
+        description="Total energy consumption across all business operations",
+        unit="kWh"
+    ),
+    ESGQuestion(
+        id="co2_emissions",
+        question="What are your annual CO2 emissions (metric tons)?",
+        category=ESGCategory.ENVIRONMENTAL,
+        question_type=ESGQuestionType.NUMERIC,
+        weight=1.2,
+        industry_default=8.5,
+        description="Direct and indirect CO2 emissions",
+        unit="metric tons"
+    ),
+    ESGQuestion(
+        id="packaging_recyclability",
+        question="What percentage of your packaging is recyclable?",
+        category=ESGCategory.ENVIRONMENTAL,
+        question_type=ESGQuestionType.PERCENTAGE,
+        weight=0.8,
+        industry_default=70,
+        description="Percentage of packaging materials that can be recycled"
+    ),
+    ESGQuestion(
+        id="diversity_percentage",
+        question="What percentage of your workforce represents diverse backgrounds?",
+        category=ESGCategory.SOCIAL,
+        question_type=ESGQuestionType.PERCENTAGE,
+        weight=1.0,
+        industry_default=35,
+        description="Diversity in terms of gender, ethnicity, and other factors"
+    ),
+    ESGQuestion(
+        id="female_leadership",
+        question="What percentage of leadership positions are held by women?",
+        category=ESGCategory.SOCIAL,
+        question_type=ESGQuestionType.PERCENTAGE,
+        weight=0.9,
+        industry_default=30,
+        description="Female representation in management and leadership roles"
+    ),
+    ESGQuestion(
+        id="employee_satisfaction",
+        question="What is your employee satisfaction score (1-10)?",
+        category=ESGCategory.SOCIAL,
+        question_type=ESGQuestionType.NUMERIC,
+        weight=1.1,
+        industry_default=7.8,
+        description="Employee satisfaction based on surveys or feedback",
+        unit="score (1-10)"
+    ),
+    ESGQuestion(
+        id="data_privacy_compliance",
+        question="Do you have data privacy compliance measures in place?",
+        category=ESGCategory.GOVERNANCE,
+        question_type=ESGQuestionType.BOOLEAN,
+        weight=1.0,
+        description="GDPR, CCPA or other data privacy compliance"
+    ),
+    ESGQuestion(
+        id="ethics_training",
+        question="What percentage of employees completed ethics training?",
+        category=ESGCategory.GOVERNANCE,
+        question_type=ESGQuestionType.PERCENTAGE,
+        weight=0.8,
+        industry_default=85,
+        description="Percentage of staff who completed ethics and compliance training"
+    ),
+    ESGQuestion(
+        id="supplier_code",
+        question="Do you have a supplier code of conduct?",
+        category=ESGCategory.GOVERNANCE,
+        question_type=ESGQuestionType.BOOLEAN,
+        weight=0.7,
+        description="Written code of conduct for suppliers and partners"
+    ),
+    ESGQuestion(
+        id="transparency_reporting",
+        question="Do you publish sustainability/ESG reports?",
+        category=ESGCategory.GOVERNANCE,
+        question_type=ESGQuestionType.BOOLEAN,
+        weight=0.6,
+        description="Regular publication of ESG performance reports"
+    )
+]
+
+
 class CSVTemplate(BaseModel):
     """CSV template model for download."""
     filename: str
