@@ -1,0 +1,66 @@
+~/workspace$ poetry install
+Updating dependencies
+Resolving dependencies... (28.8s)
+Warning: The locked version 2.1.0 for email-validator is a yanked version. Reason for being yanked: Forgot to drop Python 3.7 from python_requires, see https://github.com/JoshData/python-email-validator/pull/118
+
+Package operations: 1 install, 0 updates, 0 removals
+
+  • Installing pycrypto (2.6.1)
+
+Writing lock file
+~/workspace$ poetry update email-validator
+Updating dependencies
+Resolving dependencies... (21.6s)
+
+Package operations: 0 installs, 1 update, 0 removals
+
+  • Updating email-validator (2.1.0 -> 1.3.1): Failed
+
+  CalledProcessError
+
+  Command '['pip', 'uninstall', 'email-validator', '-y']' returned non-zero exit status 1.
+
+  at /nix/store/vnvdzw4182wb2ifzi0cczhv80yfnpx1q-python3-3.12.11/lib/python3.12/subprocess.py:571 in run
+       567│             # We don't call process.wait() as .__exit__ does that for us.
+       568│             raise
+       569│         retcode = process.poll()
+       570│         if check and retcode:
+    →  571│             raise CalledProcessError(retcode, process.args,
+       572│                                      output=stdout, stderr=stderr)
+       573│     return CompletedProcess(process.args, retcode, stdout, stderr)
+       574│ 
+       575│ 
+
+The following error occurred when trying to handle this error:
+
+
+  EnvCommandError
+
+  Command ['pip', 'uninstall', 'email-validator', '-y'] errored with the following return code 1
+  
+  Output:
+  error: externally-managed-environment
+  
+  × This environment is externally managed
+  ╰─> This command has been disabled as it tries to modify the immutable
+      `/nix/store` filesystem.
+      
+      To use Python with Nix and nixpkgs, have a look at the online documentation:
+      <https://nixos.org/manual/nixpkgs/stable/#python>.
+  
+  note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+  hint: See PEP 668 for the detailed specification.
+  
+
+  at /nix/store/7w523n4va7f68dk2n7mdhyssw3v79k4n-poetry-in-venv/env/lib/python3.12/site-packages/poetry/utils/env.py:1523 in _run
+      1519│                 output = ""
+      1520│             else:
+      1521│                 output = subprocess.check_output(cmd, stderr=stderr, env=env, **kwargs)
+      1522│         except CalledProcessError as e:
+    → 1523│             raise EnvCommandError(e, input=input_)
+      1524│ 
+      1525│         return decode(output)
+      1526│ 
+      1527│     def execute(self, bin: str, *args: str, **kwargs: Any) -> int:
+
+~/workspace$ 
